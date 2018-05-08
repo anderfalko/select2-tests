@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+
+    <select class="form-control estados select2"></select>
+    <select class="form-control cidades select2"></select>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script>
+        $('.estados').select2({
+            placeholder: "Estados",
+            ajax: {
+                url: 'estados.json',
+                dataType: 'json'
+            }
+        }).on("change", function () 
+        {
+            var estado = $('.estados').val();
+            var arquivo = 'cidades-' + estado + '.json';
+
+            // Fetch the preselected item, and add to the control
+            var select_cidades = $('.cidades');
+            // salva os selecionados na variável
+            var selecionados = $('.cidades :selected');
+            var selecionados_values = selecionados.map(function() 
+            {
+                return this.value;
+            }).get();
+
+            // apaga todos os itens
+            select_cidades.empty().trigger("change");
+
+            // popula os selecionados
+            $.each(selecionados, function(i, v)
+            {
+                //var option = new Option(v.text, v.id, false, false);
+                select_cidades.append(v).trigger('change');
+            });
+
+            $.getJSON(arquivo, function(data)
+            {
+                $.each(data, function(i, v)
+                {
+                    if($.inArray(v.id, selecionados_values) < 0)
+                    {
+                        var option = new Option(v.text, v.id, false, false);
+                        select_cidades.append(option).trigger('change');
+                    }
+                });
+                select_cidades.select2("open");
+            });
+        });
+
+        $('.cidades').select2(
+        {
+            multiple: true,
+            placeholder: "Cidades"
+        });
+    </script>
+  </body>
+</html>
